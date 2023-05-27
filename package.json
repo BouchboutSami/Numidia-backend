@@ -1,0 +1,19 @@
+{
+  "name": "numidia-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "author": "Bouchbout Sami",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BouchboutSami/Numidia-backend/issues"
+  },
+  "homepage": "https://github.com/BouchboutSami/Numidia-backend#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22"
+  }
+}
