@@ -172,3 +172,35 @@ router.get('/comments/:nomlieu', async (req,res)=>{
       
       
       })    
+ router.get('/transport/:idlieu',async (req, res) => {
+        let id_Lieu = parseInt(req.params.idlieu)
+        try {
+          const moyen = await prisma.transport.findMany({where:{id_lieu:id_Lieu}})
+          if(moyen == null) { return res.status(204).json({message: 'no transport for this place'})}
+          else {
+             
+            moyendetrans = await moyen.map(async(moy)=>{
+              data = await prisma.moyentransport.findFirst({where:{idmoyenTransport:moy.id_moyendetransport}})
+              horraire = await prisma.horairetransport.findMany({where:{id_moyen:data.idmoyenTransport}})
+              heures = await horraire.map(async(hor)=>{
+                datahor = await prisma.horaire.findMany({where:{idhoraire:hor.id_heure}})
+                
+                return datahor[0].heure
+              })
+                const heuremoy =await Promise.all(heures)
+               
+               
+              return {data, heuremoy}
+            }) 
+            const listtansport = await Promise.all(moyendetrans)
+            res.send(listtansport)
+          }
+        } catch (error) {
+          console.error('Error during fetching :', error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        
+        
+        
+        })
+              
