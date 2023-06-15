@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model actualite {
+  idactualite Int    @id @default(autoincrement())
+  date        String @db.VarChar(45)
+  titre       String @db.VarChar(45)
+  idadmin     Int
+  admin       admin  @relation(fields: [idadmin], references: [idAdmin], onDelete: Cascade, map: "id_adminos")
+
+  @@index([idadmin], map: "id_adminos_idx")
+}
+
+model admin {
+  idAdmin   Int         @id @default(autoincrement())
+  Email     String      @unique(map: "Email_UNIQUE") @db.VarChar(45)
+  Mdp       String      @db.VarChar(45)
+  pseudo    String      @unique(map: "pseudo_UNIQUE") @db.VarChar(45)
+  region    String      @db.VarChar(45)
+  actualite actualite[]
+  lieu      lieu[]
+  traiter   traiter[]
+}
+
+model appartient {
+  idappartient Int  @id @default(autoincrement())
+  idlieu       Int
+  idcategorie  Int
+  lieu         lieu @relation(fields: [idlieu], references: [idLieu], onDelete: Cascade, map: "id_lieus")
+
+  @@index([idlieu], map: "id_lieuxxx_idx")
+}
+
+model avis {
+  idavis        Int         @id @default(autoincrement())
+  note          String?     @db.VarChar(45)
+  LieuId        Int
+  UtilisateurId Int
+  lieu          lieu        @relation(fields: [LieuId], references: [idLieu], onDelete: NoAction, onUpdate: NoAction, map: "idLieu")
+  utilisateur   utilisateur @relation(fields: [UtilisateurId], references: [idUtilisateur], onDelete: Cascade, map: "idUtilisateur")
+
+  @@index([LieuId], map: "id_lieux_idx")
+  @@index([UtilisateurId], map: "id_utilisateurs_idx")
+}
+
+model categorie {
+  idcategorie Int     @id @default(autoincrement())
+  type        String? @db.VarChar(45)
+}
+
+model commentaire {
+  idCommentaire Int          @id @default(autoincrement())
+  Contenu       String?      @db.VarChar(200)
+  idUtilisateur Int?
+  id_Lieu       Int?
+  utilisateur   utilisateur? @relation(fields: [idUtilisateur], references: [idUtilisateur], onDelete: Cascade, map: "idUser")
+  lieu          lieu?        @relation(fields: [id_Lieu], references: [idLieu], onDelete: Cascade, map: "idlieu_1")
+  traiter       traiter[]
+
+  @@index([idUtilisateur], map: "idUtilisateur_idx")
+  @@index([id_Lieu], map: "idlieu _idx")
+}
+
+model consulter {
+  idconsulter   Int         @id @default(autoincrement())
+  idlieu        Int
+  idutilisateur Int
+  lieu          lieu        @relation(fields: [idlieu], references: [idLieu], onDelete: Cascade, map: "id_lieu1")
+  utilisateur   utilisateur @relation(fields: [idutilisateur], references: [idUtilisateur], onDelete: Cascade, map: "id_user1")
+
+  @@index([idlieu], map: "id_lieu1_idx")
+  @@index([idutilisateur], map: "id_user1_idx")
+}
+
+model contenir {
+  idcontenir Int   @id @default(autoincrement())
+  idlieu     Int
+  idtheme    Int
+  lieu       lieu  @relation(fields: [idlieu], references: [idLieu], onDelete: Cascade, map: "id__lieu")
+  theme      theme @relation(fields: [idtheme], references: [idtheme], onDelete: Cascade, map: "id_theme")
+
+  @@index([idlieu], map: "id__lieu")
+  @@index([idtheme], map: "id_themos_idx")
+}
+
+model lieu {
+  idLieu         Int           @id @default(autoincrement())
+  Nom            String        @unique(map: "Nom_UNIQUE") @db.VarChar(45)
+  Description    String?       @db.VarChar(200)
+  tarif          Int?
+  Documentation  String?       @db.Text
+  tempsOuverture String?       @db.VarChar(45)
+  tempsFermeture String?       @db.VarChar(45)
+  lat            Float         @db.Float
+  long           Float         @db.Float
+  idadmin        Int
+  idwilaya       Int
+  theme          String        @db.VarChar(45)
+  categorie      String        @db.VarChar(45)
+  appartient     appartient[]
+  avis           avis[]
+  commentaire    commentaire[]
+  consulter      consulter[]
+  contenir       contenir[]
+  favoris        favoris[]
+  admin          admin         @relation(fields: [idadmin], references: [idAdmin], onDelete: Cascade, map: "admos_fk")
+  wilaya         wilaya        @relation(fields: [idwilaya], references: [idwilaya], onDelete: Cascade, map: "idwilaya")
+  pictures       pictures[]
+  transport      transport[]
+
+  @@index([idwilaya], map: "idwilaya_idx")
+  @@index([idadmin], map: "id_adminal_idx")
+  @@index([idadmin], map: "id_adminos_idx")
+}
+
+model theme {
+  idtheme  Int        @id @default(autoincrement())
+  type     String     @db.VarChar(45)
+  contenir contenir[]
+}
+
+model traiter {
+  idtraiter     Int         @id @default(autoincrement())
+  idCommentaire Int
+  idAdmin       Int
+  commentaire   commentaire @relation(fields: [idCommentaire], references: [idCommentaire], onDelete: Cascade, map: "id_comment")
+  admin         admin       @relation(fields: [idAdmin], references: [idAdmin], onDelete: Cascade, map: "id_admin")
+
+  @@index([idCommentaire], map: "_id_comm_idx")
+  @@index([idAdmin], map: "id_adminal2_idx")
+}
+
+model utilisateur {
+  idUtilisateur Int           @id @default(autoincrement())
+  nom           String        @db.VarChar(45)
+  prenom        String        @db.VarChar(45)
+  numero_tel    String?       @db.VarChar(45)
+  Email         String?       @unique(map: "Email_UNIQUE") @db.VarChar(45)
+  Mdp           String?       @db.VarChar(100)
+  pseudo        String        @unique(map: "pseudo_UNIQUE") @db.VarChar(45)
+  avis          avis[]
+  commentaire   commentaire[]
+  consulter     consulter[]
+  favoris       favoris[]
+}
+
+model favoris {
+  idfavoris     Int         @id @default(autoincrement())
+  idutilisateur Int
+  idlieu        Int
+  lieu          lieu        @relation(fields: [idlieu], references: [idLieu], onDelete: Cascade, map: "idlieu_2")
+  utilisateur   utilisateur @relation(fields: [idutilisateur], references: [idUtilisateur], onDelete: NoAction, onUpdate: NoAction, map: "idutilisateur_1")
+
+  @@index([idlieu], map: "idlieu_idx")
+  @@index([idutilisateur], map: "idutilisateur_idx")
+}
+
+model wilaya {
+  idwilaya Int    @id
+  nom      String @db.VarChar(45)
+  lieu     lieu[]
+}
+
+model horaire {
+  idhoraire        Int                @id @default(autoincrement())
+  heure            String             @db.VarChar(45)
+  horairetransport horairetransport[]
+}
+
+model horairetransport {
+  idhoraireTransport Int            @id @default(autoincrement())
+  id_moyen           Int
+  id_heure           Int
+  horaire            horaire        @relation(fields: [id_heure], references: [idhoraire], onDelete: Cascade, map: "id_heure1")
+  moyentransport     moyentransport @relation(fields: [id_moyen], references: [idmoyenTransport], onDelete: Cascade, map: "id_moyen1")
+
+  @@index([id_heure], map: "id_heure1_idx")
+  @@index([id_moyen], map: "id_moyen1_idx")
+}
+
+model moyentransport {
+  idmoyenTransport Int                @id @default(autoincrement())
+  type             String             @db.VarChar(100)
+  description      String?            @db.VarChar(100)
+  horairetransport horairetransport[]
+  transport        transport[]
+}
+
+model transport {
+  idTransport         Int            @id @default(autoincrement())
+  id_lieu             Int
+  id_moyendetransport Int
+  lieu                lieu           @relation(fields: [id_lieu], references: [idLieu], onDelete: Cascade, map: "id_lieu3")
+  moyentransport      moyentransport @relation(fields: [id_moyendetransport], references: [idmoyenTransport], onDelete: Cascade, map: "id_moyen")
+
+  @@index([id_lieu], map: "id_lieu3_idx")
+  @@index([id_moyendetransport], map: "id_moyen_idx")
+}
+
+model pictures {
+  idpictures Int     @id @default(autoincrement())
+  pictures64 String? @db.LongText
+  idlieu     Int
+  lieu       lieu    @relation(fields: [idlieu], references: [idLieu], onDelete: Cascade, map: "id_lieueuee")
+
+  @@index([idlieu], map: "id_lieueuee_idx")
+}

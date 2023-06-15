@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
 const user = require("./routes/user");
+const { PrismaClient } = require('@prisma/client');
 
-app.get("/", (req, res) => {
-  res.send("home");
-  console.log("home");
+const prisma = new PrismaClient();
+app.get("/", async(req, res) => {
+  const lieux = await prisma.lieu.findMany()
+  res.send(lieux) 
 });
 
 app.use("/user", user);
