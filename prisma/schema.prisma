@@ -90,27 +90,28 @@ model contenir {
 }
 
 model lieu {
-  idLieu         Int           @id @default(autoincrement())
-  Nom            String        @unique(map: "Nom_UNIQUE") @db.VarChar(45)
-  Description    String?       @db.VarChar(200)
+  idLieu         Int             @id @default(autoincrement())
+  Nom            String          @unique(map: "Nom_UNIQUE") @db.VarChar(45)
+  Description    String          @db.Text
   tarif          Int?
-  Documentation  String?       @db.Text
-  tempsOuverture String?       @db.VarChar(45)
-  tempsFermeture String?       @db.VarChar(45)
-  lat            Float         @db.Float
-  long           Float         @db.Float
-  idadmin        Int
+  Documentation  String?         @db.Text
+  tempsOuverture String?         @db.VarChar(45)
+  tempsFermeture String?         @db.VarChar(45)
+  lat            Float           @db.Float
+  long           Float           @db.Float
+  idadmin        Int?
   idwilaya       Int
-  theme          String        @db.VarChar(45)
-  categorie      String        @db.VarChar(45)
+  theme          lieu_theme?
+  categorie      lieu_categorie?
+  icone          Bytes?          @db.Blob
   appartient     appartient[]
   avis           avis[]
   commentaire    commentaire[]
   consulter      consulter[]
   contenir       contenir[]
   favoris        favoris[]
-  admin          admin         @relation(fields: [idadmin], references: [idAdmin], onDelete: Cascade, map: "admos_fk")
-  wilaya         wilaya        @relation(fields: [idwilaya], references: [idwilaya], onDelete: Cascade, map: "idwilaya")
+  admin          admin?          @relation(fields: [idadmin], references: [idAdmin], onDelete: Cascade, map: "admos_fk")
+  wilaya         wilaya          @relation(fields: [idwilaya], references: [idwilaya], onDelete: Cascade, map: "idwilaya")
   pictures       pictures[]
   transport      transport[]
 
@@ -210,4 +211,24 @@ model pictures {
   lieu       lieu    @relation(fields: [idlieu], references: [idLieu], onDelete: Cascade, map: "id_lieueuee")
 
   @@index([idlieu], map: "id_lieueuee_idx")
+}
+
+enum lieu_theme {
+  Nature
+  Divertissement
+  Histoire
+  Hebergement
+}
+
+enum lieu_categorie {
+  Cin_ma     @map("Cinéma")
+  Hotel
+  Stade
+  Mus_e      @map("Musée")
+  Jardin
+  Restaurant
+  Plage
+  Monument
+  Parc
+  Commerce
 }
