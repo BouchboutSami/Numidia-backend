@@ -197,3 +197,8 @@ router.get("/transport/:idlieu", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+
+router.get("/actualites", async (req, res) => {
+  const actualites = await prisma.actualite.findMany();
+  res.send(actualites);
+});
