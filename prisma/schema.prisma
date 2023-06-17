@@ -11,8 +11,8 @@ model actualite {
   idactualite Int    @id @default(autoincrement())
   date        String @db.VarChar(45)
   titre       String @db.VarChar(45)
-  idadmin     Int
-  admin       admin  @relation(fields: [idadmin], references: [idAdmin], onDelete: Cascade, map: "id_adminos")
+  idadmin     Int?
+  admin       admin? @relation(fields: [idadmin], references: [idAdmin], onDelete: Cascade, map: "id_adminos")
 
   @@index([idadmin], map: "id_adminos_idx")
 }
@@ -20,7 +20,7 @@ model actualite {
 model admin {
   idAdmin   Int         @id @default(autoincrement())
   Email     String      @unique(map: "Email_UNIQUE") @db.VarChar(45)
-  Mdp       String      @db.VarChar(45)
+  Mdp       String      @db.VarChar(100)
   pseudo    String      @unique(map: "pseudo_UNIQUE") @db.VarChar(45)
   region    String      @db.VarChar(45)
   actualite actualite[]
@@ -143,7 +143,7 @@ model utilisateur {
   prenom        String        @db.VarChar(45)
   numero_tel    String?       @db.VarChar(45)
   Email         String?       @unique(map: "Email_UNIQUE") @db.VarChar(45)
-  Mdp           String?       @db.VarChar(100)
+  Mdp           String?       @db.VarChar(200)
   pseudo        String        @unique(map: "pseudo_UNIQUE") @db.VarChar(45)
   avis          avis[]
   commentaire   commentaire[]
@@ -186,9 +186,9 @@ model horairetransport {
 }
 
 model moyentransport {
-  idmoyenTransport Int                @id @default(autoincrement())
-  type             String             @db.VarChar(100)
-  description      String?            @db.VarChar(100)
+  idmoyenTransport Int                 @id @default(autoincrement())
+  type             moyentransport_type
+  description      String?             @db.VarChar(100)
   horairetransport horairetransport[]
   transport        transport[]
 }
@@ -205,10 +205,10 @@ model transport {
 }
 
 model pictures {
-  idpictures Int     @id @default(autoincrement())
-  pictures64 String? @db.LongText
+  idpictures Int   @id @default(autoincrement())
+  pictures64 Bytes
   idlieu     Int
-  lieu       lieu    @relation(fields: [idlieu], references: [idLieu], onDelete: Cascade, map: "id_lieueuee")
+  lieu       lieu  @relation(fields: [idlieu], references: [idLieu], onDelete: Cascade, map: "id_lieueuee")
 
   @@index([idlieu], map: "id_lieueuee_idx")
 }
@@ -231,4 +231,12 @@ enum lieu_categorie {
   Monument
   Parc
   Commerce
+}
+
+enum moyentransport_type {
+  tramway
+  metro
+  taxi
+  bus
+  train
 }

@@ -30,7 +30,7 @@ router.get("/wilaya/:id", async (req, res) => {
   }
 });
 //la moyenne d''un lieu donne
-router.get("/moyen/:idlieu", async (req, res) => {
+router.get("/moyenne/:idlieu", async (req, res) => {
   let idlieu = parseInt(req.params.idlieu);
 
   const data = await prisma.lieu.findMany({
@@ -43,7 +43,7 @@ router.get("/moyen/:idlieu", async (req, res) => {
   } else {
     const avis = data[0].avis;
     if (avis.length == 0) {
-      res.json({ message: "lieu non noté" });
+      res.send("0");
     } else {
       const totalavis = avis.length;
       const sum = avis.reduce((acc, i) => acc + parseInt(i.note), 0);
